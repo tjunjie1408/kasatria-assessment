@@ -281,7 +281,7 @@ function animate() {
     requestAnimationFrame(animate);
     TWEEN.update(); 
     controls.update();
-    scene.rotation.y += 0.001;
+    scene.rotation.y += 0.0015;
 }
 
 function render() {
