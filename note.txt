@@ -1,0 +1,3 @@
+CLIENT_ID: '728334140802-gp43nonjm6opkllsb5lto6hihnednqdb.apps.googleusercontent.com',
+API_KEY: 'AIzaSyCDeGjr2gcwkDOJ7zIXqKdQpHXq_Xt4o5Q',
+SPREADSHEET_ID: '1k-bJFEJQu5142dZDyNC3YDu7ejTLOXkvhpPHEMPFuyM',
