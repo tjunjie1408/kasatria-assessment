@@ -3,9 +3,9 @@ import { CSS3DRenderer, CSS3DObject } from 'three/addons/renderers/CSS3DRenderer
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 const CONFIG = {
-    CLIENT_ID: '728334140802-gp43nonjm6opkllsb5lto6hihnednqdb.apps.googleusercontent.com',
-    API_KEY: 'AIzaSyCDeGjr2gcwkDOJ7zIXqKdQpHXq_Xt4o5Q',
-    SPREADSHEET_ID: '1k-bJFEJQu5142dZDyNC3YDu7ejTLOXkvhpPHEMPFuyM', 
+    CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+    API_KEY: import.meta.env.VITE_GOOGLE_API_KEY, 
+    SPREADSHEET_ID: import.meta.env.VITE_GOOGLE_SHEET_ID, 
     RANGE: 'Sheet1!A2:F', 
 };
 
