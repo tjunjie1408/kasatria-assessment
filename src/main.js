@@ -11,7 +11,7 @@ const CONFIG = {
 
 let camera, scene, renderer, controls;
 const objects = [];
-const targets = { table: [], sphere: [], helix: [], grid: [] };
+const targets = { table: [], sphere: [], helix: [], grid: [], pyramid: [] };
 
 function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -201,6 +201,43 @@ function calculateLayouts(count) {
         object.position.z = (Math.floor(i / 20)) * 1000 - 2000;
         targets.grid.push(object);
     }
+    // Pyramid
+    const r = 1600; 
+    const v0 = new THREE.Vector3(0, r, 0);
+    const v1 = new THREE.Vector3(r * Math.sqrt(8/9), -r/3, 0);
+    const v2 = new THREE.Vector3(-r * Math.sqrt(2/9), -r/3, r * Math.sqrt(2/3));
+    const v3 = new THREE.Vector3(-r * Math.sqrt(2/9), -r/3, -r * Math.sqrt(2/3));
+
+    const faces = [
+        [v0, v1, v2],
+        [v0, v2, v3],
+        [v0, v3, v1],
+        [v1, v3, v2]
+    ];
+
+    for (let i = 0; i < count; i++) {
+        const object = new THREE.Object3D();
+        const faceIndex = i % 4; 
+        const face = faces[faceIndex];
+        
+        const a = Math.random();
+        const b = Math.random();
+        let sqRootA = Math.sqrt(a);
+        const u = 1 - sqRootA;
+        const v = sqRootA * (1 - b);
+        const w = sqRootA * b;
+
+        const position = new THREE.Vector3()
+            .addScaledVector(face[0], u)
+            .addScaledVector(face[1], v)
+            .addScaledVector(face[2], w);
+
+        object.position.copy(position);
+        const lookVector = position.clone().multiplyScalar(2); 
+        object.lookAt(lookVector);
+
+        targets.pyramid.push(object);
+    }
 }
 
 function initThreeJS() {
@@ -238,6 +275,10 @@ function initThreeJS() {
     document.getElementById('grid').addEventListener('click', () => {
         console.log("Click Grid");
         transform(targets.grid, 2000);
+    });
+    document.getElementById('pyramid').addEventListener('click', () => {
+        console.log("Click Pyramid");
+        transform(targets.pyramid, 2000);
     });
 
     window.addEventListener('resize', onWindowResize);
