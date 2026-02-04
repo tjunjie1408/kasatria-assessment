@@ -204,14 +204,14 @@ function calculateLayouts(count) {
     }
 
     // ---------------- PYRAMID----------------
-    const r = 1200;
-    const height = r * 1.5; 
-    
-    const v0 = new THREE.Vector3(0, r, 0);
+    const r = 1500; 
+    const h = r * Math.sqrt(2 / 3);
     const root3 = Math.sqrt(3);
-    const v1 = new THREE.Vector3(-r, -r/2,  r/root3);
-    const v2 = new THREE.Vector3( r, -r/2,  r/root3);
-    const v3 = new THREE.Vector3( 0, -r/2, -r * 2/root3);
+
+    const v0 = new THREE.Vector3(0, r, 0);
+    const v1 = new THREE.Vector3(-r, -r/2, r/root3);
+    const v2 = new THREE.Vector3(r, -r/2, r/root3);
+    const v3 = new THREE.Vector3(0, -r/2, -2*r/root3);
 
     const faces = [
         [v0, v1, v2],
@@ -223,33 +223,48 @@ function calculateLayouts(count) {
     const faceNormals = faces.map(face => {
         const cb = new THREE.Vector3().subVectors(face[2], face[1]);
         const ab = new THREE.Vector3().subVectors(face[0], face[1]);
-        const normal = new THREE.Vector3().crossVectors(cb, ab).normalize();
-        return normal;
+        return new THREE.Vector3().crossVectors(cb, ab).normalize();
     });
+    
+    let cardIndex = 0;
+    
+    for (let f = 0; f < 4; f++) {
+        const face = faces[f];
+        const normal = faceNormals[f];
+        
+        const top = face[0];
+        const bottomLeft = face[1];
+        const bottomRight = face[2];
 
-    for (let i = 0; i < count; i++) {
-        const object = new THREE.Object3D();
-        const faceIndex = i % 4; 
-        const face = faces[faceIndex];
-        const normal = faceNormals[faceIndex];
+        let countInThisFace = 0;
+        const maxCardsPerFace = 50; 
+        
+        for (let row = 1; row <= 10; row++) {
+            if (countInThisFace >= maxCardsPerFace) break;
+            const cols = row; 
+            
+            for (let col = 0; col < cols; col++) {
+                if (countInThisFace >= maxCardsPerFace) break;
 
-        const a = Math.random();
-        const b = Math.random();
-        let sqRootA = Math.sqrt(a);
-        const u = 1 - sqRootA;
-        const v = sqRootA * (1 - b);
-        const w = sqRootA * b;
+                const alpha = row / 11; 
 
-        const position = new THREE.Vector3()
-            .addScaledVector(face[0], u)
-            .addScaledVector(face[1], v)
-            .addScaledVector(face[2], w);
+                const leftEdge = new THREE.Vector3().lerpVectors(top, bottomLeft, alpha);
+                const rightEdge = new THREE.Vector3().lerpVectors(top, bottomRight, alpha);
 
-        object.position.copy(position);
-        const targetLook = position.clone().add(normal);
-        object.lookAt(targetLook);
+                const beta = cols === 1 ? 0.5 : col / (cols - 1);
+                
+                const position = new THREE.Vector3().lerpVectors(leftEdge, rightEdge, beta);
+                const object = new THREE.Object3D();
+                object.position.copy(position);
+                const targetLook = position.clone().add(normal);
+                object.lookAt(targetLook);
 
-        targets.pyramid.push(object);
+                targets.pyramid.push(object);
+                
+                countInThisFace++;
+                cardIndex++;
+            }
+        }
     }
 }
 
