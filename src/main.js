@@ -204,7 +204,7 @@ function calculateLayouts(count) {
     }
 
     // ---------------- PYRAMID----------------
-    const r = 1800;
+    const r = 1200;
     const height = r * 1.5; 
     
     const v0 = new THREE.Vector3(0, r, 0);
