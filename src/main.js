@@ -159,7 +159,7 @@ function createObjects(data) {
 }
 
 function calculateLayouts(count) {
-    // Table
+    // ---------------- TABLE ----------------
     for (let i = 0; i < count; i++) {
         const object = new THREE.Object3D();
         const col = i % 20;
@@ -168,7 +168,8 @@ function calculateLayouts(count) {
         object.position.y = -(row * 180) + 990;
         targets.table.push(object);
     }
-    // Sphere
+
+    // ---------------- SPHERE ----------------
     const vector = new THREE.Vector3();
     for (let i = 0; i < count; i++) {
         const phi = Math.acos(-1 + (2 * i) / count);
@@ -179,21 +180,21 @@ function calculateLayouts(count) {
         object.lookAt(vector);
         targets.sphere.push(object);
     }
-    // Helix
+
+    // ---------------- HELIX ----------------
     for (let i = 0; i < count; i++) {
         const object = new THREE.Object3D();
         const theta = i * 0.1 + Math.PI * (i % 2); 
         const y = -(i * 30) + 3000; 
-
-        object.position.setFromCylindricalCoords(800, theta, y);
+        object.position.setFromCylindricalCoords(900, theta, y);
         vector.x = object.position.x * 2;
         vector.y = object.position.y;
         vector.z = object.position.z * 2;
         object.lookAt(vector);
-
         targets.helix.push(object);
     }
-    // Grid
+
+    // ---------------- GRID ----------------
     for (let i = 0; i < count; i++) {
         const object = new THREE.Object3D();
         object.position.x = ((i % 5) * 400) - 800;
@@ -201,12 +202,16 @@ function calculateLayouts(count) {
         object.position.z = (Math.floor(i / 20)) * 1000 - 2000;
         targets.grid.push(object);
     }
-    // Pyramid
-    const r = 1600; 
+
+    // ---------------- PYRAMID----------------
+    const r = 1800;
+    const height = r * 1.5; 
+    
     const v0 = new THREE.Vector3(0, r, 0);
-    const v1 = new THREE.Vector3(r * Math.sqrt(8/9), -r/3, 0);
-    const v2 = new THREE.Vector3(-r * Math.sqrt(2/9), -r/3, r * Math.sqrt(2/3));
-    const v3 = new THREE.Vector3(-r * Math.sqrt(2/9), -r/3, -r * Math.sqrt(2/3));
+    const root3 = Math.sqrt(3);
+    const v1 = new THREE.Vector3(-r, -r/2,  r/root3);
+    const v2 = new THREE.Vector3( r, -r/2,  r/root3);
+    const v3 = new THREE.Vector3( 0, -r/2, -r * 2/root3);
 
     const faces = [
         [v0, v1, v2],
@@ -215,11 +220,19 @@ function calculateLayouts(count) {
         [v1, v3, v2]
     ];
 
+    const faceNormals = faces.map(face => {
+        const cb = new THREE.Vector3().subVectors(face[2], face[1]);
+        const ab = new THREE.Vector3().subVectors(face[0], face[1]);
+        const normal = new THREE.Vector3().crossVectors(cb, ab).normalize();
+        return normal;
+    });
+
     for (let i = 0; i < count; i++) {
         const object = new THREE.Object3D();
         const faceIndex = i % 4; 
         const face = faces[faceIndex];
-        
+        const normal = faceNormals[faceIndex];
+
         const a = Math.random();
         const b = Math.random();
         let sqRootA = Math.sqrt(a);
@@ -233,8 +246,8 @@ function calculateLayouts(count) {
             .addScaledVector(face[2], w);
 
         object.position.copy(position);
-        const lookVector = position.clone().multiplyScalar(2); 
-        object.lookAt(lookVector);
+        const targetLook = position.clone().add(normal);
+        object.lookAt(targetLook);
 
         targets.pyramid.push(object);
     }
